@@ -56,10 +56,10 @@ class ODSReader:
                         if (n.nodeType == 1 and n.tagName == "text:span"):
                             for c in n.childNodes:
                                 if (c.nodeType == 3):
-                                    textContent = textContent + unicode(c.data)
+                                    textContent = textContent + str(c.data)
 
                         if (n.nodeType == 3):
-                            textContent = textContent + unicode(n.data)
+                            textContent = textContent + str(n.data)
 
                 if(textContent):
                     if(textContent[0] != "#"): # ignore comments cells
@@ -76,7 +76,7 @@ class ODSReader:
                 arrRows.append(arrCells)
 
             #else:
-            #    print "Empty or commented row (", row_comment, ")"
+            #    print ("Empty or commented row (", row_comment, ")")
 
         self.SHEETS[name] = arrRows
 
