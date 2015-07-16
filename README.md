@@ -11,11 +11,13 @@ It has been tested with odfpy 0.9.3 and python 2.7, using ods files created with
 
 Usage example (thanks to 'gtr'):
 
+```python
 from ODSReader import *
-doc = ODSReader("films.ods")
-table = doc.getSheet("Sheet1")
+doc = ODSReader(u'films.ods')
+table = doc.getSheet(u'Sheet1')
 firstRow = table[0]
 firstCellOfFirstRow = firstRow[0]
+```
 
 Requirements
 -----------------
