@@ -22,7 +22,8 @@ from odf.text import P
 class ODSReader:
 
     # loads the file
-    def __init__(self, file):
+    def __init__(self, file, clonespannedcolumns=None):
+        self.clonespannedcolumns = clonespannedcolumns
         self.doc = odf.opendocument.load(file)
         self.SHEETS = {}
         for sheet in self.doc.spreadsheet.getElementsByType(Table):
@@ -46,6 +47,10 @@ class ODSReader:
                 repeat = cell.getAttribute("numbercolumnsrepeated")
                 if(not repeat):
                     repeat = 1
+                    spanned = int(cell.getAttribute('numbercolumnsspanned') or 0)
+                    # clone spanned cells
+                    if self.clonespannedcolumns is not None and spanned > 1:
+                        repeat = spanned
 
                 ps = cell.getElementsByType(P)
                 textContent = ""
