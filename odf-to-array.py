@@ -15,7 +15,7 @@
 # Thanks to grt for the fixes
 
 import odf.opendocument
-from odf.table import *
+from odf.table import Table, TableRow, TableCell
 from odf.text import P
 
 
@@ -29,7 +29,8 @@ class ODSReader:
         for sheet in self.doc.spreadsheet.getElementsByType(Table):
             self.readSheet(sheet)
 
-    # reads a sheet in the sheet dictionary, storing each sheet as an array (rows) of arrays (columns)
+    # reads a sheet in the sheet dictionary, storing each sheet as an
+    # array (rows) of arrays (columns)
     def readSheet(self, sheet):
         name = sheet.getAttribute("name")
         rows = sheet.getElementsByType(TableRow)
@@ -67,11 +68,11 @@ class ODSReader:
                             textContent = u'{}{}'.format(textContent, n.data)
 
                 if(textContent):
-                    if(textContent[0] != "#"): # ignore comments cells
-                        for rr in range(int(repeat)): # repeated?
+                    if(textContent[0] != "#"):  # ignore comments cells
+                        for rr in range(int(repeat)):  # repeated?
                             arrCells.append(textContent)
                     else:
-                        row_comment = row_comment + textContent + " ";
+                        row_comment = row_comment + textContent + " "
                 else:
                     for rr in range(int(repeat)):
                         arrCells.append("")
