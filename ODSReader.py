@@ -18,6 +18,12 @@ import odf.opendocument
 from odf.table import Table, TableRow, TableCell
 from odf.text import P
 
+# http://stackoverflow.com/a/4544699/1846474
+class GrowingList(list):
+    def __setitem__(self, index, value):
+        if index >= len(self):
+            self.extend([None]*(index + 1 - len(self)))
+        list.__setitem__(self, index, value)
 
 class ODSReader:
 
@@ -39,10 +45,11 @@ class ODSReader:
         # for each row
         for row in rows:
             row_comment = ""
-            arrCells = []
+            arrCells = GrowingList()
             cells = row.getElementsByType(TableCell)
 
             # for each cell
+            count = 0
             for cell in cells:
                 # repeated value?
                 repeat = cell.getAttribute("numbercolumnsrepeated")
@@ -70,12 +77,13 @@ class ODSReader:
                 if(textContent):
                     if(textContent[0] != "#"):  # ignore comments cells
                         for rr in range(int(repeat)):  # repeated?
-                            arrCells.append(textContent)
+                            arrCells[count]=textContent
+                            count+=1
                     else:
                         row_comment = row_comment + textContent + " "
                 else:
                     for rr in range(int(repeat)):
-                        arrCells.append("")
+                        count+=1
 
             # if row contained something
             if(len(arrCells)):
