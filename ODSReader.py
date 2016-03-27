@@ -25,19 +25,26 @@ class GrowingList(list):
             self.extend([None]*(index + 1 - len(self)))
         list.__setitem__(self, index, value)
 
-class ODSReader:
+class ODSReader(object):
+    """Loads ODS file"""
 
-    # loads the file
     def __init__(self, file, clonespannedcolumns=None):
         self.clonespannedcolumns = clonespannedcolumns
         self.doc = odf.opendocument.load(file)
-        self.SHEETS = {}
+        self.sheets = []
+        self.sheet_names = []
         for sheet in self.doc.spreadsheet.getElementsByType(Table):
             self.readSheet(sheet)
 
     # reads a sheet in the sheet dictionary, storing each sheet as an
     # array (rows) of arrays (columns)
     def readSheet(self, sheet):
+        """Reads a sheet in the sheet dictionary
+
+        Stores each sheet as an array (rows) of arrays (columns)
+
+        """
+
         name = sheet.getAttribute("name")
         rows = sheet.getElementsByType(TableRow)
         arrRows = []
@@ -55,7 +62,8 @@ class ODSReader:
                 repeat = cell.getAttribute("numbercolumnsrepeated")
                 if(not repeat):
                     repeat = 1
-                    spanned = int(cell.getAttribute('numbercolumnsspanned') or 0)
+                    spanned = \
+                        int(cell.getAttribute('numbercolumnsspanned') or 0)
                     # clone spanned cells
                     if self.clonespannedcolumns is not None and spanned > 1:
                         repeat = spanned
@@ -69,20 +77,21 @@ class ODSReader:
                         if (n.nodeType == 1 and n.tagName == "text:span"):
                             for c in n.childNodes:
                                 if (c.nodeType == 3):
-                                    textContent = u'{}{}'.format(textContent, n.data)
+                                    textContent = u'{}{}'.format(textContent,
+                                                                 n.data)
 
                         if (n.nodeType == 3):
                             textContent = u'{}{}'.format(textContent, n.data)
 
                 if(textContent):
                     if(textContent[0] != "#"):  # ignore comments cells
-                        for rr in range(int(repeat)):  # repeated?
+                        for rr in xrange(int(repeat)):  # repeated?
                             arrCells[count]=textContent
                             count+=1
                     else:
                         row_comment = row_comment + textContent + " "
                 else:
-                    for rr in range(int(repeat)):
+                    for rr in xrange(int(repeat)):
                         count+=1
 
             # if row contained something
@@ -92,8 +101,11 @@ class ODSReader:
             #else:
             #    print ("Empty or commented row (", row_comment, ")")
 
-        self.SHEETS[name] = arrRows
+        self.sheets.append(arrRows)
+        self.sheet_names.append(name)
 
-    # returns a sheet as an array (rows) of arrays (columns)
+
     def getSheet(self, name):
-        return self.SHEETS[name]
+        """Returns first sheet with the name name as array (rows, columns)"""
+
+        return self.sheets[self.sheet_names.index(name)]
