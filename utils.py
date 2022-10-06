@@ -16,24 +16,38 @@ def keyval(sheet, *funcs):
     return out
 
 # perhaps use namedtuple instead
-def record_reader(sheet, *funcs):
+def record_reader(sheet, *funcs, trim_None=True):
     '''Outputs a list of dicts from a spreadsheet, accepting functions to change the elements of the dicts.
-    First row is labels and is untouched. If number of elements exceeds the functions provided, the rest are just handled as strings.'''
+    First row is labels and is untouched. If number of elements exceeds the functions provided, the rest are just handled as strings.
+    Trims empty fields by default.'''
     out = []
     first_row = sheet[0]
     for row in sheet[1:]:
         record = {}
         if not funcs:
             for i,e in enumerate(row):
-                record[first_row[i]] = e
+                if trim_None:
+                    if e is not None:
+                        record[first_row[i]] = e
+                else:
+                    record[first_row[i]] = e
         else:
             for i,e in enumerate(row):
-                if i+1 <= len(funcs):
-                    func = funcs[i]
+                if trim_None:
+                    if e is not None:
+                        if i+1 <= len(funcs):
+                            func = funcs[i]
+                        else:
+                            func = str
                 else:
-                    func = str
+                    if i+1 <= len(funcs):
+                        func = funcs[i]
+                    else:
+                        func = str
                 record[first_row[i]] = func(e)
         out.append(record)
     return out
     
+def dict_from_list_of_dicts(key, dicts):
+    assert False, 'Incomplete'
     
