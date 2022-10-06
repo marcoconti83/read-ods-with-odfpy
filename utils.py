@@ -1,6 +1,4 @@
 #! /usr/bin/python3
-from copy import copy
-
 def keyval(sheet, *funcs):
     '''For a sheet with rows of keys and values, creates a dictionary from it with functions applied to the keys or keys and values, or none.
     Example: keyval(sheet, str, int)
@@ -35,7 +33,7 @@ def record_reader(sheet, *funcs):
                 else:
                     func = str
                 record[first_row[i]] = func(e)
-        out.append(copy(record))
+        out.append(record)
     return out
     
     
