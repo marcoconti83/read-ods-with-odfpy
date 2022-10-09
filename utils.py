@@ -16,10 +16,14 @@ def keyval(sheet, *funcs):
     return out
 
 # perhaps use namedtuple instead
-def record_reader(sheet, *funcs, trim_None=True):
+def record_reader(sheet, *funcs, nones='fill'):
     '''Outputs a list of dicts from a spreadsheet, accepting functions to change the elements of the dicts.
     First row is labels and is untouched. If number of elements exceeds the functions provided, the rest are just handled as strings.
-    Trims empty fields by default.'''
+    Nones by default are...'''
+    assert False, 'Incomplete.'
+    # nones fill = give it a None
+    # nones trim = leave it out of the dict, rather than adding 'None'
+    # nones string = 'None'
     out = []
     first_row = sheet[0]
     for row in sheet[1:]:
@@ -48,6 +52,8 @@ def record_reader(sheet, *funcs, trim_None=True):
         out.append(record)
     return out
     
-def dict_from_list_of_dicts(key, dicts):
+def dict_of_dicts_from_list_of_dicts(key, dicts):
     assert False, 'Incomplete'
+    # I want this to return a dict which is keyed by a field given by key,
+    # and then it will be a dict of dicts.
     
