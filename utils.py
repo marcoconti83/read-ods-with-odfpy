@@ -57,8 +57,11 @@ def rows_to_list_of_dicts(sheet, *funcs, nones='fill'):
         out.append(row_to_dict(first_row, row, *funcs, nones=nones))
     return out
     
-def dict_of_dicts_from_list_of_dicts(key, dicts):
-    assert False, 'Incomplete'
-    # I want this to return a dict which is keyed by a field given by key,
-    # and then it will be a dict of dicts.
-    
+def dict_of_dicts_from_list_of_dicts(key, list_of_dicts):
+    out = {}
+    while list_of_dicts:
+        outdict = list_of_dicts.pop()
+        outkey = outdict.pop(key)
+        out[outkey] = outdict
+    return out
+
