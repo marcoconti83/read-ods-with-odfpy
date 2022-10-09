@@ -1,14 +1,17 @@
 #! /usr/bin/python3
-def dict_sheet_to_dict(sheet, *funcs):
-    '''For a sheet with rows of keys and values, creates a dictionary from it with functions applied to the keys or keys and values, or none.
-    Example: keyval(sheet, str, int)
+def keyval_sheet_to_dict(sheet, sheetname, *funcs):
+    '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
+    sheet is an ODSReader().
+    sheetname is the worksheet name.
+    Example: keyval(sheet, sheetname, str, int)
     If only one function is provided, it will apply the function to keys and values.'''
+    outsheet = sheet.getSheet(sheetname)
     out = {}
     if not funcs:
-        for row in sheet:
+        for row in outsheet:
             out[row[0]] = row[1]
     else:
-        for row in sheet:
+        for row in outsheet:
             if len(funcs) == 1:
                 out[funcs[0](row[0])] = funcs[0](row[1])
             else:
@@ -58,6 +61,7 @@ def rows_to_list_of_dicts(sheet, *funcs, nones='fill'):
     return out
     
 def dict_of_dicts_from_list_of_dicts(key, list_of_dicts):
+    '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
     while list_of_dicts:
         outdict = list_of_dicts.pop()
@@ -65,3 +69,15 @@ def dict_of_dicts_from_list_of_dicts(key, list_of_dicts):
         out[outkey] = outdict
     return out
 
+
+def dict_sheet_to_dict_of_dicts(sheet, sheetname, key, *funcs, nones='fill'):
+    '''Creates a dict of dicts (a mini-database) for a particular sheet in an ODSReader() object.
+    sheet is an ODSReader().
+    sheetname is the worksheet name.
+    key is the column that should be the key of the new dict of dicts
+    funcs are functions that should be applied to the data as it becomes entries in the dict.
+    nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
+    out = sheet.getSheet(sheetname)
+    out = rows_to_list_of_dicts(out, *funcs, nones=nones)
+    out = dict_of_dicts_from_list_of_dicts(key, out)
+    return out
