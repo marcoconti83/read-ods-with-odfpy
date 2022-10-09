@@ -15,38 +15,36 @@ def keyval(sheet, *funcs):
                 out[funcs[0](row[0])] = funcs[1](row[1])
     return out
 
-def interpret_none(key, row, nones='fill'):
+def interpret_none(key, interpreted_dict, nones='fill'):
     '''Enters a value into row[key] based on nones.
     'fill' will enter a None
     'string' will enter 'None'
     'trim' is valid and will do nothing.
     Other values will raise assertion error.'''
     if nones == 'fill':
-        row[key] = None
+        interpreted_dict[key] = None
     elif nones == 'string':
-        row[key] = 'None'
+        interpreted_dict[key] = 'None'
     else:
         assert nones == 'trim', f'Unknown interpretation of None: {nones}'
 
 def row_to_dict(key_row, row, *funcs, nones='fill'):
     '''Takes a row of a data from a spreadsheet (list), converts to a dict.'''
     out = {}
-    print(key_row)
-    print(row)
-    print(funcs)
-    print(nones)
     for i,e in enumerate(key_row):
         # Is the examined element of the row populated?
         if len(row)-1 >= i:
             if row[i] is None:
-                interpret_none(e, row, nones)
+                interpret_none(e, out, nones)
             else:
                 # Does the examined element of the row have a function?
                 if len(funcs)-1 >= i:
                     out[e] = funcs[i](row[i])
+                else:
+                    out[e] = str(row[i])
         else:
             # If not, it can be assumed to be None
-            interpret_none(e, row, nones)
+            interpret_none(e, out, nones)
     return out                
     
 def rows_to_list_of_dicts(sheet, *funcs, nones='fill'):
