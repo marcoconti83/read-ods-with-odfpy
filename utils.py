@@ -81,7 +81,7 @@ def rows_to_list_of_dicts(sheet, *funcs, nones='fill'):
         out.append(row_to_dict(first_row, row, *funcs, nones=nones))
     return out
     
-def dict_of_dicts_from_list_of_dicts(key, list_of_dicts):
+def list_of_dicts_to_dict_of_dicts(key, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
     while list_of_dicts:
@@ -100,5 +100,5 @@ def dict_sheet_to_dict_of_dicts(sheet, sheetname, key, *funcs, nones='fill'):
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, *funcs, nones=nones)
-    out = dict_of_dicts_from_list_of_dicts(key, out)
+    out = list_of_dicts_to_dict_of_dicts(key, out)
     return out
