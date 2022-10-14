@@ -42,7 +42,7 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, key, objclass, *funcs, nones='f
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, *funcs, nones=nones)
-    out = dict_of_dicts_from_list_of_dicts(key, out)
+    out = list_of_dicts_to_dict_of_dicts(key, out)
     out = dict_of_dicts_to_dict_of_objs(out, objclass)
     return out
 
