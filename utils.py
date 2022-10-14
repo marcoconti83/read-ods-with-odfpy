@@ -26,10 +26,10 @@ def keyval_sheet_to_dict(sheet, sheetname, *funcs):
     return out
 
 def dict_of_dicts_to_dict_of_objs(dict_of_dicts, objclass):
-    '''Given a dict of dicts, outputs a dict of objects using the dict_of_dicts values.items as **kwargs.'''
+    '''Given a dict of dicts, outputs a dict of objects using the dict_of_dicts values.items as kwargs (not **kwargs).'''
     out = {}
     for (k,v) in dict_of_dicts.items():
-        out[k] = objclass(**v)
+        out[k] = objclass(v)
     return out
 
 def dict_sheet_to_dict_of_objs(sheet, sheetname, key, objclass, *funcs, nones='fill'):
