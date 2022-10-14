@@ -1,4 +1,11 @@
 #! /usr/bin/python3
+def sheet_to_vals(sheet=None, sheetname=None, funcs=None, keys=None, nones='fill'):
+    assert False, 'Incomplete'
+
+def sheet_to_objs(objclass, sheet=None, sheetname=None, funcs=None, keys=None, nones='fill'):
+    assert False, 'Incomplete'
+
+
 def keyval_sheet_to_dict(sheet, sheetname, *funcs):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
