@@ -1,11 +1,4 @@
 #! /usr/bin/python3
-def sheet_to_vals(sheet=None, sheetname=None, funcs=None, keys=None, nones='fill'):
-    assert False, 'Incomplete'
-
-def sheet_to_objs(objclass, sheet=None, sheetname=None, funcs=None, keys=None, nones='fill'):
-    assert False, 'Incomplete'
-
-
 def keyval_sheet_to_dict(sheet, sheetname, *funcs):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
@@ -32,7 +25,7 @@ def dict_of_dicts_to_dict_of_objs(dict_of_dicts, objclass):
         out[k] = objclass(v)
     return out
 
-def dict_sheet_to_dict_of_objs(sheet, sheetname, key, objclass, *funcs, nones='fill'):
+def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None, nones='fill'):
     '''Creates a dict of objects for a particular sheet in an ODSReader() object.
     sheet is an ODSReader().
     sheetname is the worksheet name.
@@ -41,8 +34,10 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, key, objclass, *funcs, nones='f
     funcs are functions that should be applied to the data as it becomes entries in the dict.
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
-    out = rows_to_list_of_dicts(out, *funcs, nones=nones)
-    out = list_of_dicts_to_dict_of_dicts(key, out)
+    out = rows_to_list_of_dicts(out, funcs, nones=nones)
+    out = list_of_dicts_to_dict_of_dicts(keys, out) # keys, accept multiple
+    print(out)
+    input()
     out = dict_of_dicts_to_dict_of_objs(out, objclass)
     return out
 
@@ -59,8 +54,9 @@ def interpret_none(key, interpreted_dict, nones='fill'):
     else:
         assert nones == 'trim', f'Unknown interpretation of None: {nones}'
 
-def row_to_dict(key_row, row, *funcs, nones='fill'):
-    '''Takes a row of a data from a spreadsheet (list), converts to a dict.'''
+def row_to_dict(key_row, row, funcs=None, nones='fill'):
+    '''Takes a row of a data from a spreadsheet (list), converts to a dict.
+    Applies function to row items, with the default function being str'''
     out = {}
     for i,e in enumerate(key_row):
         # Is the examined element of the row populated?
@@ -78,22 +74,24 @@ def row_to_dict(key_row, row, *funcs, nones='fill'):
             interpret_none(e, out, nones)
     return out                
     
-def rows_to_list_of_dicts(sheet, *funcs, nones='fill'):
+def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
     '''Outputs a list of dicts from a spreadsheet, accepting functions to change the elements of the dicts.
     First row is labels and is untouched. If number of elements exceeds the functions provided, the rest are just handled as strings.
     Nones by default are "fill" (with None), "trim" (exclude from the dict), and "string" ("None")...'''
     out = []
     first_row = sheet[0]
     for row in sheet[1:]:
-        out.append(row_to_dict(first_row, row, *funcs, nones=nones))
+        out.append(row_to_dict(first_row, row, funcs, nones=nones))
     return out
     
-def list_of_dicts_to_dict_of_dicts(key, list_of_dicts):
+def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
     while list_of_dicts:
         outdict = list_of_dicts.pop()
-        outkey = outdict.pop(key)
+        outkeys = []
+        for key in keys:
+            outkeys.append(outdict.pop(key))
         out[outkey] = outdict
     return out
 
