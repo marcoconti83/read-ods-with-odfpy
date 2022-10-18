@@ -97,7 +97,7 @@ def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     return out
 
 
-def dict_sheet_to_dict_of_dicts(sheet, sheetname, key, *funcs, nones='fill'):
+def dict_sheet_to_dict_of_dicts(sheet, sheetname, key, funcs, nones='fill'):
     '''Creates a dict of dicts (a mini-database) for a particular sheet in an ODSReader() object.
     sheet is an ODSReader().
     sheetname is the worksheet name.
@@ -105,7 +105,7 @@ def dict_sheet_to_dict_of_dicts(sheet, sheetname, key, *funcs, nones='fill'):
     funcs are functions that should be applied to the data as it becomes entries in the dict.
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
-    out = rows_to_list_of_dicts(out, *funcs, nones=nones)
+    out = rows_to_list_of_dicts(out, funcs, nones=nones)
     out = list_of_dicts_to_dict_of_dicts(key, out)
     return out
 
