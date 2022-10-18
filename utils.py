@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-def keyval_sheet_to_dict(sheet, sheetname, *funcs):
+def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
     sheetname is the worksheet name.
@@ -65,12 +65,13 @@ def row_to_dict(key_row, row, funcs=None, nones='fill'):
                 interpret_none(e, out, nones)
             else:
                 # Does the examined element of the row have a function?
-                if len(funcs)-1 >= i:
+                if funcs is not None and len(funcs)-1 >= i:
                     out[e] = funcs[i](row[i])
                 else:
+                    # If element is beyond range of funcs, it defaults to str
                     out[e] = str(row[i])
         else:
-            # If not, it can be assumed to be None
+            # If row doesn't extend this far, it is None
             interpret_none(e, out, nones)
     return out                
     
@@ -79,9 +80,9 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
     First row is labels and is untouched. If number of elements exceeds the functions provided, the rest are just handled as strings.
     Nones by default are "fill" (with None), "trim" (exclude from the dict), and "string" ("None")...'''
     out = []
-    first_row = sheet[0]
+    key_row = sheet[0]
     for row in sheet[1:]:
-        out.append(row_to_dict(first_row, row, funcs, nones=nones))
+        out.append(row_to_dict(key_row, row, funcs, nones=nones))
     return out
     
 def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
