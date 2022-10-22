@@ -1,4 +1,6 @@
 #! /usr/bin/python3
+from copy import copy
+
 def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
@@ -35,7 +37,7 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, funcs, nones)
-    out = list_of_dicts_to_dict_of_dicts(keys, out) # keys, accept multiple
+    out = list_of_dicts_to_dict_of_dicts(keys, out)
     print(out)
     input()
     out = dict_of_dicts_to_dict_of_objs(out, objclass)
@@ -84,7 +86,33 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
     for row in sheet[1:]:
         out.append(row_to_dict(key_row, row, funcs, nones=nones))
     return out
-    
+
+
+
+ad = {'type':'car', 'color':'red', 'speed':'fast', 'insurance':'expensive'}
+ak = ['type', 'color']
+
+def dict_to_dict_of_dicts(keys, dictin, out=None, preserve_keys=True):
+    if out is None:
+        out = {}
+
+    if len(keys) > 1:
+        key, nextkeys = keys[0], keys[1:]
+        print(key)
+        if preserve_keys:
+            out[dictin[key]] = dict_to_dict_of_dicts(nextkeys, dictin, out, preserve_keys)
+            return out
+        else:
+            val = dictin.pop(key)
+            out[val] = dict_to_dict_of_dicts(nextkeys, dictin, out, preserve_keys)
+            return out
+    return out
+
+print(dict_to_dict_of_dicts(ak, ad))
+##dict_to_dict_of_dicts(ak, ad, preserve_keys=False)
+
+
+
 def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
