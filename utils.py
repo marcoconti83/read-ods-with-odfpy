@@ -1,6 +1,4 @@
 #! /usr/bin/python3
-from copy import copy
-
 def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
