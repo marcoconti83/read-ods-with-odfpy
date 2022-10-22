@@ -87,31 +87,15 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
         out.append(row_to_dict(key_row, row, funcs, nones=nones))
     return out
 
-
-
-ad = {'type':'car', 'color':'red', 'speed':'fast', 'insurance':'expensive'}
-ak = ['type', 'color']
-
-def dict_to_dict_of_dicts(keys, dictin, out=None, preserve_keys=True):
-    if out is None:
+def dict_to_dict_of_dicts(keys, dictin):
+    '''Given keys, this creates a nested dictionary (any depth).'''
+    out = {}
+    out[dictin[keys.pop()]] = dictin
+    while keys:
+        temp = out
         out = {}
-
-    if len(keys) > 1:
-        key, nextkeys = keys[0], keys[1:]
-        print(key)
-        if preserve_keys:
-            out[dictin[key]] = dict_to_dict_of_dicts(nextkeys, dictin, out, preserve_keys)
-            return out
-        else:
-            val = dictin.pop(key)
-            out[val] = dict_to_dict_of_dicts(nextkeys, dictin, out, preserve_keys)
-            return out
+        out[dictin[keys.pop()]] = temp
     return out
-
-print(dict_to_dict_of_dicts(ak, ad))
-##dict_to_dict_of_dicts(ak, ad, preserve_keys=False)
-
-
 
 def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
