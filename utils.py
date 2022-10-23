@@ -85,7 +85,8 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
         out.append(row_to_dict(key_row, row, funcs, nones=nones))
     return out
 
-def dict_to_dict_of_dicts(keys, dictin):
+
+def dict_to_dict_of_dicts(dictin, keys):
     '''Given keys, this creates a nested dictionary (any depth).'''
     out = {}
     out[dictin[keys.pop()]] = dictin
@@ -94,6 +95,16 @@ def dict_to_dict_of_dicts(keys, dictin):
         out = {}
         out[dictin[keys.pop()]] = temp
     return out
+
+##def dict_to_dict_of_dicts(__dict, keys):
+##    result = curr = {}
+##    last_key = keys[-1]
+##
+##    for key in keys:
+##        curr[__dict[key]] = curr = __dict if key == last_key else {}
+##
+##    return result
+
 
 def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
@@ -130,3 +141,9 @@ def dict_sheet_to_list_of_dicts(sheet, sheetname, *funcs, nones='fill'):
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, *funcs, nones=nones)
     return out
+
+
+if __name__ == '__main__':
+    adict = {'type':'car', 'color':'red', 'speed':'fast', 'insurance':'expensive'}
+    akeys = ['type', 'color', 'speed']
+    print(dict_to_dict_of_dicts(adict, akeys))
