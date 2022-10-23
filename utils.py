@@ -1,6 +1,4 @@
 #! /usr/bin/python3
-from copy import copy
-
 def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
@@ -90,13 +88,14 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
 
 def dict_to_dict_of_dicts(dictin, keys):
     '''Given keys, this creates a nested dictionary (any depth).'''
+    assert keys != [], 'keys can not be empty list.'
     out = {}
-    keyslist = copy(keys)
-    out[dictin[keyslist.pop()]] = dictin
-    while keyslist:
-        temp = out
-        out = {}
-        out[dictin[keyslist.pop()]] = temp
+    out[dictin[keys[-1]]] = dictin
+    if len(keys) > 0:
+        for k in reversed(keys[:-1]):
+            temp = out
+            out = {}
+            out[dictin[k]] = temp
     return out
 
 ##def dict_to_dict_of_dicts(__dict, keys):
