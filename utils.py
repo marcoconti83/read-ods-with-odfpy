@@ -1,4 +1,6 @@
 #! /usr/bin/python3
+from copy import copy
+
 def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
@@ -89,11 +91,12 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
 def dict_to_dict_of_dicts(dictin, keys):
     '''Given keys, this creates a nested dictionary (any depth).'''
     out = {}
-    out[dictin[keys.pop()]] = dictin
-    while keys:
+    keyslist = copy(keys)
+    out[dictin[keyslist.pop()]] = dictin
+    while keyslist:
         temp = out
         out = {}
-        out[dictin[keys.pop()]] = temp
+        out[dictin[keyslist.pop()]] = temp
     return out
 
 ##def dict_to_dict_of_dicts(__dict, keys):
@@ -110,11 +113,16 @@ def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
     while list_of_dicts:
-        outdict = list_of_dicts.pop()
-        outkeys = []
-        for key in keys:
-            outkeys.append(outdict.pop(key))
-        out[outkey] = outdict
+        outdict = dict_to_dict_of_dicts(list_of_dicts.pop(), keys)
+        for k,v in outdict.items():
+            out[k] = v
+##        print(outdict)
+##        outkeys = []
+##        for key in keys:
+##            outkeys.append(outdict.pop(key))
+##        print(outkeys)
+##        out[outkey] = outdict
+##    print(out)
     return out
 
 
