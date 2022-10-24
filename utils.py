@@ -36,8 +36,8 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, funcs, nones)
     out = list_of_dicts_to_dict_of_dicts(keys, out)
-    print(out)
-    input()
+##    print(out)
+##    input()
     out = dict_of_dicts_to_dict_of_objs(out, objclass)
     return out
 
@@ -90,7 +90,7 @@ def dict_to_dict_of_dicts(dictin, keys):
     '''Given keys, this creates a nested dictionary (any depth).'''
     assert keys != [], 'keys can not be empty list.'
     out = {}
-    input(dictin)
+##    input(dictin)
     out[dictin[keys[-1]]] = dictin
     if len(keys) > 0:
         for k in reversed(keys[:-1]):
@@ -109,12 +109,12 @@ def dict_to_dict_of_dicts(dictin, keys):
 ##    return result
 
 
-def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
+def list_of_dicts_to_dict_of_dicts(dicts, keys):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
-    while list_of_dicts:
-        input(list_of_dicts)
-        outdict = dict_to_dict_of_dicts(list_of_dicts.pop(), keys)
+    while dicts:
+##        input(dicts)
+        outdict = dict_to_dict_of_dicts(dicts.pop(), keys)
         for k,v in outdict.items():
             out[k] = v
 ##        print(outdict)
@@ -136,7 +136,7 @@ def dict_sheet_to_dict_of_dicts(sheet, sheetname, keys, funcs=None, nones='fill'
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, funcs, nones)
-    print(f'out: {out}')
+##    print(f'out: {out}')
     out = list_of_dicts_to_dict_of_dicts(out, keys)
     return out
 
