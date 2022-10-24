@@ -90,6 +90,7 @@ def dict_to_dict_of_dicts(dictin, keys):
     '''Given keys, this creates a nested dictionary (any depth).'''
     assert keys != [], 'keys can not be empty list.'
     out = {}
+    input(dictin)
     out[dictin[keys[-1]]] = dictin
     if len(keys) > 0:
         for k in reversed(keys[:-1]):
@@ -112,6 +113,7 @@ def list_of_dicts_to_dict_of_dicts(keys, list_of_dicts):
     '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
     out = {}
     while list_of_dicts:
+        input(list_of_dicts)
         outdict = dict_to_dict_of_dicts(list_of_dicts.pop(), keys)
         for k,v in outdict.items():
             out[k] = v
@@ -134,11 +136,12 @@ def dict_sheet_to_dict_of_dicts(sheet, sheetname, keys, funcs=None, nones='fill'
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, funcs, nones)
-    out = list_of_dicts_to_dict_of_dicts(keys, out)
+    print(f'out: {out}')
+    out = list_of_dicts_to_dict_of_dicts(out, keys)
     return out
 
 
-def dict_sheet_to_list_of_dicts(sheet, sheetname, *funcs, nones='fill'):
+def dict_sheet_to_list_of_dicts(sheet, sheetname, keys, funcs=None, nones='fill'):
     '''Creates a list of dicts for a particular sheet in an ODSReader() object.
     sheet is an ODSReader().
     sheetname is the worksheet name.
@@ -146,7 +149,7 @@ def dict_sheet_to_list_of_dicts(sheet, sheetname, *funcs, nones='fill'):
     funcs are functions that should be applied to the data as it becomes entries in the dict.
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
-    out = rows_to_list_of_dicts(out, *funcs, nones=nones)
+    out = rows_to_list_of_dicts(out, funcs, nones)
     return out
 
 
