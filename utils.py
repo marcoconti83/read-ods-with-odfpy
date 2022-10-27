@@ -1,4 +1,7 @@
 #! /usr/bin/python3
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
     '''For a sheet with rows of 1 key and 1 value, returns a dictionary.
     sheet is an ODSReader().
@@ -35,7 +38,7 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, funcs, nones)
-    out = list_of_dicts_to_dict_of_dicts(keys, out)
+    out = (keys, out)
 ##    print(out)
 ##    input()
     out = dict_of_dicts_to_dict_of_objs(out, objclass)
@@ -85,12 +88,13 @@ def rows_to_list_of_dicts(sheet, funcs=None, nones='fill'):
         out.append(row_to_dict(key_row, row, funcs, nones=nones))
     return out
 
-
 def dict_to_dict_of_dicts(dictin, keys):
     '''Given keys, this creates a nested dictionary (any depth).'''
+    # Because this assumes creating a single dict of dicts using a single dict,
+    # no caution has to be taken to avoid overwriting,
+    # and therefore you can populate from the innermost to outermost layer.
     assert keys != [], 'keys can not be empty list.'
     out = {}
-##    input(dictin)
     out[dictin[keys[-1]]] = dictin
     if len(keys) > 0:
         for k in reversed(keys[:-1]):
@@ -99,34 +103,29 @@ def dict_to_dict_of_dicts(dictin, keys):
             out[dictin[k]] = temp
     return out
 
-##def dict_to_dict_of_dicts(__dict, keys):
-##    result = curr = {}
-##    last_key = keys[-1]
-##
-##    for key in keys:
-##        curr[__dict[key]] = curr = __dict if key == last_key else {}
-##
-##    return result
 
-
+def add_dict_to_dict_of_dicts(dictin, keys, out):
+    '''Adds a dict to a dict of dicts.'''
+    assert keys, 'Need populated list.'
+    if len(keys) >= 2:
+        # If you have further depth before populating.
+        if dictin[keys[0]] in out:
+            out = out[dictin[keys[0]]]
+            add_dict_to_dict_of_dicts(dictin, keys[1:], out)
+        else:
+            out[dictin[keys[0]]] = {}
+            out = out[dictin[keys[0]]]
+            add_dict_to_dict_of_dicts(dictin, keys[1:], out)
+    else:
+        out[dictin[keys[0]]] = dictin
+        
 def list_of_dicts_to_dict_of_dicts(dicts, keys):
-    '''Takes a list of dicts and indexes them by key into a dict of dicts.'''
+    '''Converts list of dicts into dict of dicts (any depth).'''
     out = {}
-    while dicts:
-##        input(dicts)
-        outdict = dict_to_dict_of_dicts(dicts.pop(), keys)
-        for k,v in outdict.items():
-            out[k] = v
-##        print(outdict)
-##        outkeys = []
-##        for key in keys:
-##            outkeys.append(outdict.pop(key))
-##        print(outkeys)
-##        out[outkey] = outdict
-##    print(out)
+    for d in dicts:
+        add_dict_to_dict_of_dicts(d, keys, out)
     return out
-
-
+    
 def dict_sheet_to_dict_of_dicts(sheet, sheetname, keys, funcs=None, nones='fill'):
     '''Creates a dict of dicts (a mini-database) for a particular sheet in an ODSReader() object.
     sheet is an ODSReader().
