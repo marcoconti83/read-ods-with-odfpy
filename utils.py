@@ -21,11 +21,34 @@ def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
                 out[funcs[0](row[0])] = funcs[1](row[1])
     return out
 
-def dict_of_dicts_to_dict_of_objs(dict_of_dicts, objclass):
+##def add_dict_to_dict_of_dicts(dictin, keys, out):
+##    '''Adds a dict to a dict of dicts.'''
+##    assert keys, 'Need populated list.'
+##    if len(keys) >= 2:
+##        # If you have further depth before populating.
+##        if dictin[keys[0]] in out:
+##            out = out[dictin[keys[0]]]
+##            add_dict_to_dict_of_dicts(dictin, keys[1:], out)
+##        else:
+##            out[dictin[keys[0]]] = {}
+##            out = out[dictin[keys[0]]]
+##            add_dict_to_dict_of_dicts(dictin, keys[1:], out)
+##    else:
+##        out[dictin[keys[0]]] = dictin
+##        
+##def list_of_dicts_to_dict_of_dicts(dicts, keys):
+##    '''Converts list of dicts into dict of dicts (any depth).'''
+##    out = {}
+##    for d in dicts:
+##        add_dict_to_dict_of_dicts(d, keys, out)
+##    return out
+
+def dict_of_dicts_to_dict_of_objs(dicts, objclass, keys=None):
+    assert False, 'Incomplete.'
     '''Given a dict of dicts, outputs a dict of objects using the dict_of_dicts values.items as kwargs (not **kwargs).'''
     out = {}
-    for (k,v) in dict_of_dicts.items():
-        out[k] = objclass(v)
+    for d in dicts:
+        convert_dict_to_obj_in_dict_of_dicts(d, keys, out)
     return out
 
 def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None, nones='fill'):
@@ -36,12 +59,9 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None
     objclass is the class that will be called via __init__(**kwargs), with kwargs populated from the rows.
     funcs are functions that should be applied to the data as it becomes entries in the dict.
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
-    out = sheet.getSheet(sheetname)
-    out = rows_to_list_of_dicts(out, funcs, nones)
-    out = (keys, out)
-##    print(out)
-##    input()
-    out = dict_of_dicts_to_dict_of_objs(out, objclass)
+    out = dict_sheet_to_dict_of_dicts(sheet, sheetname, keys, funcs, nones)
+    assert False, 'Incomplete'
+    out = dict_of_dicts_to_dict_of_objs(...)
     return out
 
 def interpret_none(key, interpreted_dict, nones='fill'):
@@ -135,7 +155,6 @@ def dict_sheet_to_dict_of_dicts(sheet, sheetname, keys, funcs=None, nones='fill'
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = sheet.getSheet(sheetname)
     out = rows_to_list_of_dicts(out, funcs, nones)
-##    print(f'out: {out}')
     out = list_of_dicts_to_dict_of_dicts(out, keys)
     return out
 
