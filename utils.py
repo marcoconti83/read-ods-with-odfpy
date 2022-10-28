@@ -21,35 +21,18 @@ def keyval_sheet_to_dict(sheet, sheetname, funcs=None):
                 out[funcs[0](row[0])] = funcs[1](row[1])
     return out
 
-##def add_dict_to_dict_of_dicts(dictin, keys, out):
-##    '''Adds a dict to a dict of dicts.'''
-##    assert keys, 'Need populated list.'
-##    if len(keys) >= 2:
-##        # If you have further depth before populating.
-##        if dictin[keys[0]] in out:
-##            out = out[dictin[keys[0]]]
-##            add_dict_to_dict_of_dicts(dictin, keys[1:], out)
-##        else:
-##            out[dictin[keys[0]]] = {}
-##            out = out[dictin[keys[0]]]
-##            add_dict_to_dict_of_dicts(dictin, keys[1:], out)
-##    else:
-##        out[dictin[keys[0]]] = dictin
-##        
-##def list_of_dicts_to_dict_of_dicts(dicts, keys):
-##    '''Converts list of dicts into dict of dicts (any depth).'''
-##    out = {}
-##    for d in dicts:
-##        add_dict_to_dict_of_dicts(d, keys, out)
-##    return out
-
-def dict_of_dicts_to_dict_of_objs(dicts, objclass, keys=None):
-    assert False, 'Incomplete.'
-    '''Given a dict of dicts, outputs a dict of objects using the dict_of_dicts values.items as kwargs (not **kwargs).'''
-    out = {}
-    for d in dicts:
-        convert_dict_to_obj_in_dict_of_dicts(d, keys, out)
-    return out
+def convert_dict_vals_to_objs_in_dict_of_dicts(dictin, objclass, depth=1):
+    '''Converts, in place, a dict of dicts into a dict of objects, with any
+    nesting depth. Typically depth will be the length of the keys of the
+    dictionary, though this method is typically only called from within this
+    module.'''
+    assert depth >= 1, 'Depth must be 1 or higher.'
+    if depth == 1:
+        for k,v in dictin.items():
+            dictin[k] = objclass(v)
+    else:
+        for k in dictin:
+            convert_dict_vals_to_objs_in_dict_of_dicts(dictin[k], objclass, depth-1)
 
 def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None, nones='fill'):
     '''Creates a dict of objects for a particular sheet in an ODSReader() object.
@@ -60,8 +43,7 @@ def dict_sheet_to_dict_of_objs(sheet, sheetname, objclass, keys=None, funcs=None
     funcs are functions that should be applied to the data as it becomes entries in the dict.
     nones describes how to handle empty fields. 'fill' fills with None, 'trim' removes, 'string' fills with 'None'.'''
     out = dict_sheet_to_dict_of_dicts(sheet, sheetname, keys, funcs, nones)
-    assert False, 'Incomplete'
-    out = dict_of_dicts_to_dict_of_objs(...)
+    convert_dict_vals_to_objs_in_dict_of_dicts(out, objclass, len(keys))
     return out
 
 def interpret_none(key, interpreted_dict, nones='fill'):
